@@ -4,9 +4,9 @@ from pathlib import Path
 root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(root / "src"))
 
-from app import add, sub, mult, div, squared, log, sin, cos, percentage, squareroot
+from app import add, sub, mult, div, squared, logfunc, sinfunc, cosfunc, percentage, squareroot
 import pytest
-from math import sqrt, log, sin, cos
+from math import sqrt, log, sin, cos, radians
 
 def test_add():
     assert add(5, 6) == 11
@@ -50,20 +50,37 @@ def test_squared(a):
 @pytest.mark.parametrize("base", [2, 3, 4, 5])
 def test_log1(base):
     # log rule: log_b(1) = 0
-    assert log(1, base) == 0
+    assert logfunc(1, base) == 0
 
 @pytest.mark.parametrize("base", [2, 3, 4, 5])
 def test_log2(base):
     # log rule: log_b(b) = 1
-    assert log(base, base) == 1
+    assert logfunc(base, base) == 1
+
+@pytest.mark.parametrize("a,base", [(0, 2), (-3, 10), (4, 1)])
+def test_log3(a, base):
+    with pytest.raises(ValueError):
+        logfunc(a, base)
 
 @pytest.mark.parametrize("a", [1, 2, 3, 4, 5])
 def test_sin(a):
-    assert sin(a) >= -1 and sin(a) <= 1
+    assert sinfunc(a) >= -1 and sinfunc(a) <= 1
+
+def test_sin_degrees():
+    assert sinfunc(90, in_degrees=True) == pytest.approx(1.0) # account for floating point error
+
+def test_sin_zero():
+    assert sinfunc(0, in_degrees=True) == pytest.approx(0.0)
 
 @pytest.mark.parametrize("a", [1, 2, 3, 4, 5])
 def test_cos(a):
-    assert cos(a) >= -1 and cos(a) <= 1
+    assert cosfunc(a) >= -1 and cosfunc(a) <= 1
+
+def test_cos_degrees():
+    assert cosfunc(180, in_degrees=True) == pytest.approx(-1.0)
+
+def test_cos_zero():
+    assert cosfunc(0, in_degrees=True) == pytest.approx(1.0)
 
 @pytest.mark.parametrize(
     "x,y,expected",
